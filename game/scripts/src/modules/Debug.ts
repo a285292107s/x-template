@@ -2,12 +2,6 @@ import { reloadable } from '../utils/tstl-utils';
 
 import { FlameGraphProfilerTests } from '../utils/performance/flame_graph_profiler_test';
 
-declare global {
-    interface CDOTAGameRules {
-        Debug: Debug;
-    }
-}
-
 @reloadable
 export class Debug {
     DebugEnabled = false;
@@ -23,13 +17,6 @@ export class Debug {
         if (IsInToolsMode()) {
             this._toggleDebugMode(true);
         }
-    }
-
-    static getInstance() {
-        if (!GameRules.Debug) {
-            GameRules.Debug = new Debug();
-        }
-        return GameRules.Debug;
     }
 
     private _toggleDebugMode(on?: boolean) {
