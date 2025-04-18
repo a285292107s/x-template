@@ -1,5 +1,11 @@
 import { reloadable } from '../utils/tstl-utils';
 
+declare global {
+    interface CDOTAGameRules {
+        XNetTable: XNetTable;
+    }
+}
+
 function get_table_size(t: any) {
     // 如果不是table，那么直接返回长度
     if (type(t) !== `table`) {
@@ -67,6 +73,14 @@ export class XNetTable {
             | string // 要么是以字符串形式发送的数据块
             | XNetTableObject; // 要么是一次性发送的数据
     }[] = [];
+
+    static getInstance() {
+        // 使用GameRules来保证不同的lua虚拟机中使用的是同一个实例
+        if (!GameRules.XNetTable) {
+            GameRules.XNetTable = new XNetTable();
+        }
+        return GameRules.XNetTable;
+    }
 
     /**
      * 设置所有玩家共享的数据
