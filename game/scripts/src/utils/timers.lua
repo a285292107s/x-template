@@ -230,8 +230,6 @@ end
 function Timers:HandleEventError(err)
 	if IsInToolsMode() then
 		print(err)
-	else
-		StatsClient:HandleError(err)
 	end
 end
 
