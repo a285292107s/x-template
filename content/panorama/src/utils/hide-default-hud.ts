@@ -38,6 +38,8 @@ function HideDefaultHud() {
     HideHudElements('stash');
     // 隐藏暂停信息
     HideHudElements('PausedInfo');
+    // 隐藏痛苦魔方倒计时
+    HideHudElements('TormentorTimerContainer');
 }
 
 HideDefaultHud();
