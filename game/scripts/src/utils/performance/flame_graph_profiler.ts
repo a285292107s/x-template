@@ -10,6 +10,8 @@
  * class Myclass{}
  */
 
+import type { TimerHandle } from '../../utils/timers';
+
 const get_time = GetSystemTimeMS;
 const sync_time = 5;
 interface ProfileNode {
@@ -36,7 +38,7 @@ export class FlameGraphProfiler {
     private isRecording: boolean = false; // 是否正在记录
     private startTime: number = 0; // 记录开始时间
     private endTime: number = 0; // 记录结束时间
-    private Timerid: string;
+    private Timerid: TimerHandle | null = null;
     private maxNode = 1;
     private testObj: Test;
 

@@ -3,13 +3,14 @@
  */
 
 import { GetFlameGraphProfiler } from './flame_graph_profiler';
+import type { TimerHandle } from '../../utils/timers';
 
 export class FlameGraphCommands {
     static instance: FlameGraphCommands;
     profiler = GetFlameGraphProfiler();
     recordingState = 0; // 0: 未开始, 1: 开始, 2: 暂停
     recordingTime = 0; // 记录时间（秒）
-    timerHandle: string | null = null;
+    timerHandle: TimerHandle | null = null;
 
     constructor() {
         this.registerCommands();
