@@ -401,7 +401,7 @@ const MyComponent: FC = () => {
 
     useGameEvent('s2c_update_score', event => {
         setScore(event.score);
-    });
+    }, []);
 
     return <Label text={`Score: ${score}`} />;
 };
@@ -749,9 +749,3 @@ npx webpack --config content/panorama/webpack.dev.js
 # 同时验证前端 + 服务端
 npx webpack --config content/panorama/webpack.dev.js && npx tstl --project game/scripts/tsconfig.json
 ```
-
-## 调试
-
-- **Panorama Debugger**：在游戏控制台输入 `panorama_debugger` 打开
-- **dump_panorama_css_properties**：打印所有支持的 CSS 属性
-- **控制台日志**：使用 `console.log()` 输出调试信息
