@@ -12,6 +12,7 @@ description: DOTA2 自定义游戏 UI（Panorama）开发指南。触发词：UI
 3. **Label 文本必须使用 text 属性**：❌ 禁止 `<Label>文本</Label>` 写法（会导致语法错误），✅ 必须使用 `<Label text="文本" />`。需要本地化时使用 `<Label localizedText="#token" />` 或 `$.Localize('#token')`，并在 `game/resource/addon.csv` 中添加对应 Token
 4. **优先使用前端 API 获取数据**：如果 Panorama API 可直接获取数据，优先在前端获取；需要后端提供的数据，使用 Game Events 通信
 5. **Net Table 限制**：每个 CustomNetTable 不能超过 2MB，表名必须注册到 `custom_net_tables.txt`；大数据量使用 XNetTable，但原则上优先使用 NetTable
+6. **配置与代码分离**：所有可能与后端共享或需要集中管理的配置、数值、常量（包括但不限于技能属性、物品数据、单位属性、游戏规则参数、界面显示配置等），都必须放在 `game/scripts/npc/` 下的 KV 文件中。前端通过编译后的 JSON（`content/panorama/src/json/`）读取，严禁在前端代码中硬编码任何可能变化的配置值。修改配置后需运行 `npx gulp kv_2_js` 刷新 JSON
 
 ## 文件结构
 
@@ -89,6 +90,23 @@ render(<MyComponent />, $.GetContextPanel());
 }
 ```
 
+### 步骤 4b：从 JSON 读取 KV 数据（推荐）
+
+游戏数值配置（技能属性、物品数据、单位属性等）存储在 KV 文件中，编译后位于 `content/panorama/src/json/`，前端可导入使用：
+
+```tsx
+import abilityData from '../json/npc_abilities_custom.json';
+
+// 读取技能数值
+const healData = abilityData.dbg_card_heal?.AbilityValues;
+const cooldown = abilityData.dbg_card_heal?.AbilityCooldown;
+```
+
+**前后端数据分离原则**：
+- 所有游戏数值配置写在 KV 文件中
+- 前后端都从编译后的 JSON 文件中读取同一份数据
+- 禁止在前端代码中硬编码数值常量，避免数据不一致
+
 ### 步骤 5：数据通信（如需要）
 
 - 前端 API 可获取的数据：直接使用 Panorama API
@@ -115,11 +133,19 @@ npx webpack --config content/panorama/webpack.dev.js
 npx tstl --project game/scripts/tsconfig.json
 ```
 
+### KV → JSON 编译（如修改了 KV 文件）
+
+如果修改了 `game/scripts/npc/` 下的 KV 文件，在编译前端之前先编译 KV：
+
+```bash
+npx gulp kv_2_js
+```
+
 ### 完整验证命令
 
 ```bash
-# 同时验证前端 + 服务端
-npx webpack --config content/panorama/webpack.dev.js && npx tstl --project game/scripts/tsconfig.json
+# 先编译 KV，再同时验证前端 + 服务端
+npx gulp jssync && npx webpack --config content/panorama/webpack.dev.js && npx tstl --project game/scripts/tsconfig.json
 ```
 
 ## Panel 类型参考

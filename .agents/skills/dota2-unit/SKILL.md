@@ -5,6 +5,10 @@ description: Dota 2 自定义单位编写指南。适用于编写/修改单位 K
 
 为 DOTA2 自定义游戏项目编写 Dota 2 自定义单位。
 
+## 核心原则
+
+1. **配置与代码分离**：所有可能与前端共享或需要集中管理的配置、数值、常量（包括但不限于单位属性、技能、物品数据、游戏规则参数等），都必须放在 `game/scripts/npc/` 下的 KV 文件中。禁止在 TSTL 代码或 UI 代码中硬编码任何可能变化的配置值。修改配置后需运行 `npx gulp kv_2_js` 刷新 JSON，保证前后端数据一致
+
 ## 文件结构
 
 | 文件 | 路径 | 用途 |
@@ -31,6 +35,38 @@ description: Dota 2 自定义单位编写指南。适用于编写/修改单位 K
 KV 文件必须在 `npc_units_custom.txt` 中通过 `#base` 引用后生效。
 
 单位名必须以 `npc_dota_` 开头。
+
+**KV 结构规则**：单位名称必须在第一级，所有属性写在第二级的 `{}` 内：
+```kv
+"npc_dota_unit_mymonster"
+{
+    "BaseClass"           "npc_dota_creature"
+    "Model"               "models/heroes/earthshaker/earthshaker.vmdl"
+    "MovementCapabilities" "DOTA_UNIT_CAP_MOVE_GROUND"
+    "MovementSpeed"       "325"
+    "StatusHealth"        "1000"
+}
+```
+
+### 步骤 2b：编译 KV 到 JSON（必须执行）
+
+修改 KV 文件后，必须运行以下命令将 KV 编译为 JSON，供前后端统一引用：
+
+```bash
+# 编译所有 KV 文件为 JSON（输出到 panorama 和 src 两个目录）
+npx gulp kv_2_js
+# 或快捷命令（同时执行 sheet→kv 和 kv→js）
+npx gulp jssync
+```
+
+编译后输出到：
+- `content/panorama/src/json/` — 前端 Panorama 使用
+- `game/scripts/src/json/` — 后端 TSTL 使用
+
+**前后端数据分离原则**：
+- 所有游戏数值配置（属性、伤害、CD、范围等）写在 KV 文件中
+- 前后端都从编译后的 JSON 文件中读取同一份数据
+- 禁止在前端或后端代码中硬编码数值常量，避免数据不一致
 
 ### 步骤 3：编写关联的技能逻辑（如需要）
 
