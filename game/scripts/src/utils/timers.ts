@@ -246,6 +246,8 @@ function RemoveTimer(handle: TimerHandle): void {
  * 一般不推荐使用此方法，建议优先取消具体的 TimerHandle。
  */
 export function ClearAll(): void {
+    print('[Timers] ClearAll() — 危险操作！此方法通常不推荐使用，它会清除所有定时器。');
+    print('[Timers] 建议优先通过 TimerHandle.cancel() 取消具体的定时器。');
     gameTimers = [];
     realTimers = [];
     nextTickCallbacks = [];
