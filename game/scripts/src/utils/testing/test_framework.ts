@@ -1517,7 +1517,7 @@ export function runAll(filter?: string): Promise<TestRunResult> {
     };
     const t0 = Time();
 
-    let matched = filter ? suites.filter(s => s.name.indexOf(filter) !== -1) : suites;
+    let matched = filter ? suites.filter(s => s.name.toLowerCase().indexOf(filter.toLowerCase()) !== -1) : suites;
 
     if (onlyMode) {
         matched = matched.filter(s => s.only || s.cases.some(tc => tc.only));
@@ -1726,7 +1726,7 @@ export function registerTestCommand(): void {
             if (!IsInToolsMode()) return;
             const text = keys.text;
             const parts = text.split(' ');
-            if (parts[0] !== '-tx') return;
+            if (parts[0].toLowerCase() !== '-tx') return;
 
             const filter = parts[1];
             print(`\n[Test] Running${filter ? ` suites matching "${filter}"` : ' all suites'}…\n`);

@@ -122,7 +122,7 @@ export class Debug {
 
     OnPlayerChat(keys: GameEventProvidedProperties & PlayerChatEvent): void {
         const strs = keys.text.split(' ');
-        const cmd = strs[0];
+        const cmd = strs[0].toLowerCase();
         const args = strs.slice(1);
         const steamid = PlayerResource.GetSteamAccountID(keys.playerid);
 
