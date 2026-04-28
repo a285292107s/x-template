@@ -126,7 +126,9 @@ function processTimers(timers: TimerEntry[], now: number): TimerEntry[] {
     return alive;
 }
 
-function think(): number {
+function think(): number | void {
+    if (GameRules.State_Get() > POST_GAME) return;
+
     if (nextTickCallbacks.length > 0) {
         const pending = nextTickCallbacks;
         nextTickCallbacks = [];
@@ -135,8 +137,6 @@ function think(): number {
             if (!ok && IsInToolsMode()) print(tostring(err));
         }
     }
-
-    if (GameRules.State_Get() > POST_GAME) return THINK_INTERVAL;
 
     // Snapshot arrays before processing — callbacks may ClearAll + CreateTimer,
     // replacing gameTimers/realTimers with new arrays whose entries we must keep.
@@ -177,7 +177,7 @@ function ensureInit(): void {
     initialized = true;
 
     const ent = SpawnEntityFromTableSynchronous('info_target', { targetname: 'timers_thinker' });
-    ent.SetThink(think, undefined!, 'timers', THINK_INTERVAL);
+    ent.SetThink(think as any, undefined!, 'timers', THINK_INTERVAL);
 }
 
 // ============================================================================
