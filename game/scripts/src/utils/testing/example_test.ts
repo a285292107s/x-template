@@ -1,8 +1,8 @@
 /**
  * Example test suite — demonstrates the testing framework API.
  *
- * Run via chat:  -test            (all suites)
- *                -test Example     (this suite only)
+ * Run via chat:  -tx            (all suites)
+ *                -tx Example     (this suite only)
  *
  * NOTE: In Lua (Dota 2 VScript), some JavaScript semantics differ:
  * - null and undefined are both nil (no distinction at runtime)

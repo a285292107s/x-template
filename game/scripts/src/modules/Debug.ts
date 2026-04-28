@@ -76,8 +76,8 @@ const DebugCallbacks: Record<string, { desc: string; func: DebugCallbackFunction
             });
         },
     },
-    ['-testx']: {
-        desc: '运行测试用例，可指定筛选名称，如 -testx TimerTests',
+    ['-tx']: {
+        desc: '运行测试用例，可指定筛选名称，如 -tx TimerTests',
         func: (_hero, ...args: string[]) => {
             if (!IsInToolsMode()) return;
             const filter = args[0];

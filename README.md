@@ -291,7 +291,7 @@ describe('MyModule', () => {
 });
 ```
 
-- **聊天指令**：`-test` 运行所有用例，`-test 关键词` 筛选运行
+- **聊天指令**：`-tx` 运行所有用例，`-tx 关键词` 筛选运行
 - **异步支持**：基于 `Timers.CreateTimer` 的 Promise 延时
 - **Mock 函数**：内置 `jest_fn()`、`spyOn()` 等工具
 - **完整匹配器**：`toBe`、`toEqual`、`toThrow`、`toHaveBeenCalled` 等

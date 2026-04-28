@@ -11,7 +11,7 @@
  * - Asymmetric matchers: expect.any(), expect.objectContaining(), etc.
  * - Mock function support: fn(), spyOn()
  * - Async support via Timers.CreateTimer
- * - Chat command integration: -test / -test SuiteName
+ * - Chat command integration: -tx / -tx SuiteName
  *
  * IMPORTANT: This framework is designed for the Lua runtime (Dota 2 VScript).
  * Key Lua/JS semantic differences are handled:
@@ -1712,7 +1712,7 @@ export function printResult(result: TestRunResult): void {
 let listenerRegistered = false;
 
 /**
- * Register the `-test` chat command.
+ * Register the `-tx` chat command.
  * Call once at startup (safe to call multiple times — guards against duplicate registration).
  */
 export function registerTestCommand(): void {
@@ -1726,7 +1726,7 @@ export function registerTestCommand(): void {
             if (!IsInToolsMode()) return;
             const text = keys.text;
             const parts = text.split(' ');
-            if (parts[0] !== '-test') return;
+            if (parts[0] !== '-tx') return;
 
             const filter = parts[1];
             print(`\n[Test] Running${filter ? ` suites matching "${filter}"` : ' all suites'}…\n`);

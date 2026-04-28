@@ -35,8 +35,8 @@ import './my_test';
 ### 3. 运行测试
 
 在游戏内聊天框输入：
-- `-test` — 运行所有测试套件
-- `-test MyModule` — 运行名称包含 "MyModule" 的套件
+- `-tx` — 运行所有测试套件
+- `-tx MyModule` — 运行名称包含 "MyModule" 的套件
 
 也可通过代码调用：
 
