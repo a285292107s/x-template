@@ -1091,7 +1091,7 @@ export class Expect {
                 return;
             }
             const lastCall = mock.calls[mock.calls.length - 1];
-            const pass = lastCall.length === args.length && lastCall.every((v, i) => deepEqual(v, args[i]));
+            const pass = lastCall.length === args.length && lastCall.every((v, i) => matchValue(v, args[i]) || deepEqual(v, args[i]));
             this._assert(
                 pass,
                 `Expected last call to be ${format(args)}, but was ${format(lastCall)}`,
@@ -1109,7 +1109,7 @@ export class Expect {
                 return;
             }
             const call = mock.calls[nthCall - 1];
-            const pass = call.length === args.length && call.every((v, i) => deepEqual(v, args[i]));
+            const pass = call.length === args.length && call.every((v, i) => matchValue(v, args[i]) || deepEqual(v, args[i]));
             this._assert(
                 pass,
                 `Expected call #${nthCall} to be ${format(args)}, but was ${format(call)}`,
@@ -1635,6 +1635,14 @@ async function runSuite(suite: TestSuite, result: TestRunResult, onlyModeActive:
             // If a failing test passes (error inverted to success), remove the error from the list
             if (testPassed && result.errors.length > 0) {
                 result.errors.pop();
+            }
+            // If a failing test unexpectedly passes (no error thrown), record the reason
+            if (!testPassed && !result.errors.some(e => e.test === tc.name && e.suite === suite.name)) {
+                result.errors.push({
+                    suite: suite.name,
+                    test: tc.name,
+                    message: 'Expected test to fail (throw), but it passed',
+                });
             }
         }
 

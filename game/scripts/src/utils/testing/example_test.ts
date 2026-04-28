@@ -433,3 +433,39 @@ describe('Example — test alias', () => {
         expect(true).toBe(false);
     });
 });
+
+// ============================================================================
+// Regression: asymmetric matchers in last/nth call matchers
+// ============================================================================
+
+describe('Regression — Mock matchers with asymmetric matchers', () => {
+    it('toHaveBeenLastCalledWith should support asymmetric matchers', () => {
+        const fn = jest_fn();
+        fn({ name: 'Alice', id: 1 });
+        fn({ name: 'Bob', id: 2 });
+
+        expect(fn).toHaveBeenLastCalledWith(expect.objectContaining({ name: 'Bob' }));
+        expect(fn).not.toHaveBeenLastCalledWith(expect.objectContaining({ name: 'Alice' }));
+    });
+
+    it('toHaveBeenNthCalledWith should support asymmetric matchers', () => {
+        const fn = jest_fn();
+        fn({ x: 10, y: 20 });
+        fn({ x: 30, y: 40 });
+
+        expect(fn).toHaveBeenNthCalledWith(1, expect.objectContaining({ x: 10 }));
+        expect(fn).toHaveBeenNthCalledWith(2, expect.anything());
+        expect(fn).not.toHaveBeenNthCalledWith(2, expect.objectContaining({ x: 10 }));
+    });
+});
+
+// ============================================================================
+// Regression: failing() that unexpectedly passes reports a clear message
+// ============================================================================
+
+describe('Regression — .failing() unexpected pass', () => {
+    it.failing('this test was expected to fail but will not — should report clear error', () => {
+        // This test does NOT throw, so .failing should report "expected to fail but passed"
+        expect(1).toBe(1);
+    });
+});
