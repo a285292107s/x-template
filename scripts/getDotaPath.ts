@@ -10,7 +10,7 @@ export default (): string | undefined => {
     // 如果可以的话，请在此处直接写死 Dota 2 的安装路径，然后把下面的都删掉，速度会更快
     // return 'C:\\Program Files\\Steam\\steamapps\\common\\dota 2 beta';
 
-       try {
+    try {
         const output = execSync('reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Valve\\Steam\\Apps\\570" /v InstallLocation', {
             encoding: 'utf-8',
         });

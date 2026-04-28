@@ -163,11 +163,14 @@ function think(): number {
 
 function ensureInit(): void {
     if (initialized) return;
-    if (!IsServer()) { initialized = true; return; }
+    if (!IsServer()) {
+        initialized = true;
+        return;
+    }
     initialized = true;
 
-    const ent = SpawnEntityFromTableSynchronous("info_target", { targetname: "timers_thinker" });
-    ent.SetThink(think, undefined!, "timers", THINK_INTERVAL);
+    const ent = SpawnEntityFromTableSynchronous('info_target', { targetname: 'timers_thinker' });
+    ent.SetThink(think, undefined!, 'timers', THINK_INTERVAL);
 }
 
 // ============================================================================
@@ -179,19 +182,16 @@ let seq = 0;
 export function CreateTimer(callback: (this: void) => void | number): TimerHandle;
 export function CreateTimer(delay: number, callback: (this: void) => void | number): TimerHandle;
 export function CreateTimer(options: CreateTimerOptions): TimerHandle;
-export function CreateTimer(
-    arg1: number | CreateTimerOptions | ((this: void) => void | number),
-    arg2?: (this: void) => void | number
-): TimerHandle {
+export function CreateTimer(arg1: number | CreateTimerOptions | ((this: void) => void | number), arg2?: (this: void) => void | number): TimerHandle {
     ensureInit();
 
     let callback: (this: void) => void | number;
     let delay = 0;
     let useGameTime = true;
 
-    if (typeof arg1 === "function") {
+    if (typeof arg1 === 'function') {
         callback = arg1;
-    } else if (typeof arg1 === "number") {
+    } else if (typeof arg1 === 'number') {
         delay = arg1;
         callback = arg2!;
     } else {
@@ -200,7 +200,7 @@ export function CreateTimer(
         if (arg1.useGameTime !== undefined) useGameTime = arg1.useGameTime;
     }
 
-    if (!callback) error("CreateTimer: callback is required");
+    if (!callback) error('CreateTimer: callback is required');
 
     const now = useGameTime ? GameRules.GetGameTime() : Time();
     seq++;

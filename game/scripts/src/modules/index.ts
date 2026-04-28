@@ -6,13 +6,6 @@ declare global {
     interface CDOTAGameRules {
         // 声明所有的GameRules模块，这个主要是为了方便其他地方的引用（保证单例模式）
         XNetTable: XNetTable;
-        TimersStressTest?: {
-            startTime: number;
-            tickCount: number;
-            phase: string;
-            pass: number;
-            fail: number;
-        };
     }
 }
 

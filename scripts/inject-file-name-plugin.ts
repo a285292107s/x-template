@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import * as tstl from 'typescript-to-lua';
+import type * as tstl from 'typescript-to-lua';
 import * as lua from 'typescript-to-lua/dist/LuaAST.js';
 
 /**
@@ -20,11 +20,7 @@ function isRegisterCall(node: ts.Node): boolean {
  * 创建 Lua 的 getfenv(1) 调用表达式
  */
 function createGetfenvLuaCall(tsOriginal: ts.Node): lua.CallExpression {
-    return lua.createCallExpression(
-        lua.createIdentifier('getfenv'),
-        [lua.createNumericLiteral(1, tsOriginal)],
-        tsOriginal
-    );
+    return lua.createCallExpression(lua.createIdentifier('getfenv'), [lua.createNumericLiteral(1, tsOriginal)], tsOriginal);
 }
 
 /**
