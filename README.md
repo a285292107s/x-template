@@ -273,6 +273,29 @@ yarn api
 
 项目内置火焰图性能分析器，可用于分析游戏运行时的性能瓶颈。详见 [Flame Graph Profiler 使用说明](https://github.com/XavierCHN/x-template/blob/master/game/scripts/src/utils/performance/flame_graph_profiler.md)。
 
+### Jest 风格测试框架
+
+项目内置了一套 **Jest 风格的测试框架**，支持在游戏内通过聊天指令直接运行测试用例。详见 [测试框架使用说明](https://github.com/XavierCHN/x-template/blob/master/game/scripts/src/utils/testing/readme.md)。
+
+```ts
+// 示例：编写一个测试
+import { describe, it, expect, delay } from '../utils/testing';
+
+describe('MyModule', () => {
+    it('should work', async () => {
+        let flag = false;
+        Timers.CreateTimer(0.1, () => { flag = true; });
+        await delay(0.2);
+        expect(flag).toBeTruthy();
+    });
+});
+```
+
+- **聊天指令**：`-test` 运行所有用例，`-test 关键词` 筛选运行
+- **异步支持**：基于 `Timers.CreateTimer` 的 Promise 延时
+- **Mock 函数**：内置 `jest_fn()`、`spyOn()` 等工具
+- **完整匹配器**：`toBe`、`toEqual`、`toThrow`、`toHaveBeenCalled` 等
+
 ---
 
 ## AI 辅助开发技能

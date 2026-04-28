@@ -26,7 +26,8 @@ English translated with [DeepSeek](https://www.deepseek.com/)
 3. Use `React` for UI development without writing XML
 4. Solves Valve toolchain issues like "UI cannot read KV files" and "UI images not auto-compiling"
 5. Supports code encryption for production
-6. Flame graph performance analysis - see [Flame Graph Profiler Guide](https://github.com/XavierCHN/x-template/blob/master/game/scripts/src/utils/performance/flame_graph_profiler.md)
+6. **Jest-compatible test framework** — write and run tests in-game via chat commands, see [Test Framework Guide](https://github.com/XavierCHN/x-template/blob/master/game/scripts/src/utils/testing/readme.md)
+7. Flame graph performance analysis - see [Flame Graph Profiler Guide](https://github.com/XavierCHN/x-template/blob/master/game/scripts/src/utils/performance/flame_graph_profiler.md)
 
 ### Features
 1. Client code in `content/panorama/src` and server code in `game/scripts/src` using TypeScript
@@ -90,6 +91,23 @@ Use `yarn launch {addon_name}_publish` to directly launch the Workshop tools for
   Use **Ctrl+Shift+5** in VSCode to open multiple terminals.
 - Tutorials available?  
   TODO: Create tutorials.
+
+### AI-Assisted Development Skills
+
+The project includes a set of **AI-assisted development skills (Skills)** in `.agents/skills/`, designed to guide AI coding assistants (such as OpenCode) in understanding and generating domain-specific code:
+
+| Skill | Description |
+|-------|-------------|
+| `dota2-ability` | Dota 2 custom ability creation |
+| `dota2-game-logic` | Game server-side logic development |
+| `dota2-item` | Custom item creation |
+| `dota2-localization` | Localization text generation |
+| `dota2-ui` | Panorama UI development |
+| `dota2-unit` | Custom unit creation |
+
+These skills are **continuously optimized test modules** that define the standards, conventions, and best practices AI should follow when generating code. Community improvements via Pull Requests are welcome.
+
+---
 
 ### Others
 - For issues, visit [GitHub Issues](https://github.com/XavierCHN/x-template/issues)
