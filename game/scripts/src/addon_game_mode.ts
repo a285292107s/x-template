@@ -8,4 +8,3 @@ Object.assign(getfenv(), {
     },
     Precache: Precache,
 });
-

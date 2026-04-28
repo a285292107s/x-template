@@ -1,9 +1,4 @@
-import {
-    describe,
-    it,
-    expect,
-    delay,
-} from './test_framework';
+import { describe, it, expect, delay } from './test_framework';
 
 describe('Timers — Basic', () => {
     it('should fire a basic delayed timer once', async () => {
@@ -93,9 +88,15 @@ describe('Timers — NextTick', () => {
 
     it('should fire in FIFO order among NextTick callbacks', async () => {
         const order: number[] = [];
-        Timers.NextTick(() => { order.push(1); });
-        Timers.NextTick(() => { order.push(2); });
-        Timers.NextTick(() => { order.push(3); });
+        Timers.NextTick(() => {
+            order.push(1);
+        });
+        Timers.NextTick(() => {
+            order.push(2);
+        });
+        Timers.NextTick(() => {
+            order.push(3);
+        });
         await delay(0.05);
         expect(order).toEqual([1, 2, 3]);
     });
@@ -133,21 +134,37 @@ describe('Timers — NextTick', () => {
 describe('Timers — Options API', () => {
     it('should work with options object (delay)', async () => {
         let fired = false;
-        Timers.CreateTimer({ delay: 0.05, callback: () => { fired = true; } });
+        Timers.CreateTimer({
+            delay: 0.05,
+            callback: () => {
+                fired = true;
+            },
+        });
         await delay(0.1);
         expect(fired).toBe(true);
     });
 
     it('should work with options object (zero delay)', async () => {
         let fired = false;
-        Timers.CreateTimer({ delay: 0, callback: () => { fired = true; } });
+        Timers.CreateTimer({
+            delay: 0,
+            callback: () => {
+                fired = true;
+            },
+        });
         await delay(0.05);
         expect(fired).toBe(true);
     });
 
     it('should support useGameTime: false', async () => {
         let fired = false;
-        Timers.CreateTimer({ delay: 0.05, useGameTime: false, callback: () => { fired = true; } });
+        Timers.CreateTimer({
+            delay: 0.05,
+            useGameTime: false,
+            callback: () => {
+                fired = true;
+            },
+        });
         await delay(0.1);
         expect(fired).toBe(true);
     });
@@ -179,8 +196,7 @@ describe('Timers — Cancellation', () => {
 
     it('should not fire after handle.cancel() in callback', async () => {
         let count = 0;
-        let handle: { cancel: () => void; readonly active: boolean; readonly name: string };
-        handle = Timers.CreateTimer(0.05, () => {
+        const handle = Timers.CreateTimer(0.05, () => {
             count++;
             handle.cancel();
             return 0.05;
@@ -228,10 +244,18 @@ describe('Timers — Handle Name', () => {
 
 describe('Timers — Multiple Timers', () => {
     it('should fire multiple timers concurrently', async () => {
-        let a = false, b = false, c = false;
-        Timers.CreateTimer(0.05, () => { a = true; });
-        Timers.CreateTimer(0.05, () => { b = true; });
-        Timers.CreateTimer(0.05, () => { c = true; });
+        let a = false,
+            b = false,
+            c = false;
+        Timers.CreateTimer(0.05, () => {
+            a = true;
+        });
+        Timers.CreateTimer(0.05, () => {
+            b = true;
+        });
+        Timers.CreateTimer(0.05, () => {
+            c = true;
+        });
         await delay(0.1);
         expect(a).toBe(true);
         expect(b).toBe(true);
@@ -240,9 +264,15 @@ describe('Timers — Multiple Timers', () => {
 
     it('should fire in order of delay', async () => {
         const order: number[] = [];
-        Timers.CreateTimer(0.1, () => { order.push(3); });
-        Timers.CreateTimer(0.03, () => { order.push(1); });
-        Timers.CreateTimer(0.06, () => { order.push(2); });
+        Timers.CreateTimer(0.1, () => {
+            order.push(3);
+        });
+        Timers.CreateTimer(0.03, () => {
+            order.push(1);
+        });
+        Timers.CreateTimer(0.06, () => {
+            order.push(2);
+        });
         await delay(0.2);
         expect(order).toEqual([1, 2, 3]);
     });
@@ -321,31 +351,46 @@ describe('Timers — Stress', () => {
 describe('Timers — RealTime vs GameTime', () => {
     it('should fire real-time timer', async () => {
         let fired = false;
-        Timers.CreateTimer({ delay: 0.05, useGameTime: false, callback: () => { fired = true; } });
+        Timers.CreateTimer({
+            delay: 0.05,
+            useGameTime: false,
+            callback: () => {
+                fired = true;
+            },
+        });
         await delay(0.1);
         expect(fired).toBe(true);
     });
 
     it('should fire game-time timer', async () => {
         let fired = false;
-        Timers.CreateTimer({ delay: 0.05, useGameTime: true, callback: () => { fired = true; } });
+        Timers.CreateTimer({
+            delay: 0.05,
+            useGameTime: true,
+            callback: () => {
+                fired = true;
+            },
+        });
         await delay(0.1);
         expect(fired).toBe(true);
     });
-
 });
 
 describe('Timers — Edge Cases', () => {
     it('should handle delay of 0', async () => {
         let fired = false;
-        Timers.CreateTimer(0, () => { fired = true; });
+        Timers.CreateTimer(0, () => {
+            fired = true;
+        });
         await delay(0.05);
         expect(fired).toBe(true);
     });
 
     it('should handle timer with no return (void)', async () => {
         let fired = false;
-        const fn = (): void => { fired = true; };
+        const fn = (): void => {
+            fired = true;
+        };
         Timers.CreateTimer(0.03, fn);
         await delay(0.08);
         expect(fired).toBe(true);
@@ -385,8 +430,7 @@ describe('Timers — Closure', () => {
 
     it('should allow closure to reference its own handle for self-cancel', async () => {
         let count = 0;
-        let handle: { cancel: () => void; readonly active: boolean; readonly name: string };
-        handle = Timers.CreateTimer(0.03, () => {
+        const handle = Timers.CreateTimer(0.03, () => {
             count++;
             if (count >= 3) {
                 handle.cancel();
