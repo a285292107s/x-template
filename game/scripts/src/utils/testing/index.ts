@@ -41,6 +41,7 @@ export {
 
 export type { TestRunResult, Mock } from './test_framework';
 
-// Import example tests so they register their suites.
+// Import tests so they register their suites.
 // Remove this line in production or replace with your own test imports.
 import './example_test';
+import './timer_test';
