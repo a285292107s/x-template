@@ -128,6 +128,10 @@
 | `gulpfile.ts` | Gulp 构建任务（Excel→KV、KV→JSON、CSV→本地化、图片预缓存、LESS 编译） |
 | `tsconfig.json` | 根 TypeScript 配置 |
 
+## 核心规则
+
+- **禁止未经用户同意执行 commit**：任何 git commit 操作必须获得用户明确许可后方可执行。
+
 ## 错误检查
 
 在修改代码后，使用以下命令分别检查前后端报错，不要使用 `tsc` 直接检查：

@@ -275,6 +275,23 @@ yarn api
 
 ---
 
+## AI 辅助开发技能
+
+项目在 `.agents/skills/` 目录下内置了一套 **AI 辅助开发技能（Skills）**，用于指导 AI 编码助手（如 OpenCode）理解和生成特定领域的代码：
+
+| 技能 | 说明 |
+|------|------|
+| `dota2-ability` | Dota 2 自定义技能编写 |
+| `dota2-game-logic` | 游戏服务端逻辑开发 |
+| `dota2-item` | 自定义物品编写 |
+| `dota2-localization` | 本地化文本生成 |
+| `dota2-ui` | Panorama UI 开发 |
+| `dota2-unit` | 自定义单位编写 |
+
+这些技能是**持续优化的测试模块**，定义了 AI 在生成对应代码时应遵循的规范、惯例和最佳实践。我们欢迎社区通过 Pull Request 提交改进，帮助 AI 生成更高质量的代码。
+
+---
+
 ## 工具推荐
 
 ### 必备软件
