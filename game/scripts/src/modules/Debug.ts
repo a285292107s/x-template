@@ -1,6 +1,7 @@
 import { reloadable } from '../utils/tstl-utils';
 import type { EasingFunctionName } from '../utils/tween';
 import { tween } from '../utils/tween';
+import { runAll, printResult } from '../utils/testing';
 
 type DebugCallbackFunction = (hero: CDOTA_BaseNPC_Hero, ...args: string[]) => void;
 
@@ -72,6 +73,17 @@ const DebugCallbacks: Record<string, { desc: string; func: DebugCallbackFunction
                     hero.SetModelScale(source.scale);
                     return 0.03;
                 }
+            });
+        },
+    },
+    ['-testx']: {
+        desc: '运行测试用例，可指定筛选名称，如 -testx TimerTests',
+        func: (_hero, ...args: string[]) => {
+            if (!IsInToolsMode()) return;
+            const filter = args[0];
+            print(`\n[Test] Running${filter ? ` suites matching "${filter}"` : ' all suites'}…\n`);
+            runAll(filter).then(result => {
+                printResult(result);
             });
         },
     },
