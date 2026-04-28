@@ -9,9 +9,21 @@
  * - 0 and "" are truthy in Lua, but the framework treats them as falsy (Jest compat)
  */
 import {
-    describe, it, test, xit, xdescribe, fit,
-    beforeAll, afterAll, beforeEach, afterEach,
-    expect, jest_fn, spyOn, restoreSpy, delay,
+    describe,
+    it,
+    test,
+    xit,
+    xdescribe,
+    fit,
+    beforeAll,
+    afterAll,
+    beforeEach,
+    afterEach,
+    expect,
+    jest_fn,
+    spyOn,
+    restoreSpy,
+    delay,
 } from './test_framework';
 
 // ============================================================================
@@ -165,7 +177,10 @@ describe('Example — Lifecycle Hooks', () => {
 describe('Example — Async', () => {
     it('should wait for a timer', async () => {
         let fired = false;
-        Timers.CreateTimer(0.1, () => { fired = true; return null; });
+        Timers.CreateTimer(0.1, () => {
+            fired = true;
+            return null;
+        });
         await delay(0.2);
         expect(fired).toBeTruthy();
     });
@@ -174,11 +189,17 @@ describe('Example — Async', () => {
         let step1 = false;
         let step2 = false;
 
-        Timers.CreateTimer(0.05, () => { step1 = true; return null; });
+        Timers.CreateTimer(0.05, () => {
+            step1 = true;
+            return null;
+        });
         await delay(0.1);
         expect(step1).toBeTruthy();
 
-        Timers.CreateTimer(0.05, () => { step2 = true; return null; });
+        Timers.CreateTimer(0.05, () => {
+            step2 = true;
+            return null;
+        });
         await delay(0.1);
         expect(step2).toBeTruthy();
     });
@@ -190,7 +211,10 @@ describe('Example — Async', () => {
 
     it('should support expect.rejects', async () => {
         const p = new Promise<void>((_, reject) => {
-            Timers.CreateTimer(0.05, () => { reject('fail!'); return null; });
+            Timers.CreateTimer(0.05, () => {
+                reject('fail!');
+                return null;
+            });
         });
         await expect(p).rejects.toBe('fail!');
     });
@@ -371,12 +395,13 @@ describe('Example — Asymmetric Matchers', () => {
 // ============================================================================
 
 describe('Example — Data-Driven', () => {
-    it.each([[1, 2, 3], [2, 3, 5], [10, 20, 30]])(
-        'add %p + %p = %p',
-        (a, b, expected) => {
-            expect((a as number) + (b as number)).toBe(expected);
-        },
-    );
+    it.each([
+        [1, 2, 3],
+        [2, 3, 5],
+        [10, 20, 30],
+    ])('add %p + %p = %p', (a, b, expected) => {
+        expect((a as number) + (b as number)).toBe(expected);
+    });
 });
 
 // ============================================================================

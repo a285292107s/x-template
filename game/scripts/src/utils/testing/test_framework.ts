@@ -145,7 +145,7 @@ function isFalsy(val: unknown): boolean {
  */
 function collectKeys(t: object): string[] {
     const keys: string[] = [];
-    for (const k in (t as Record<string, unknown>)) {
+    for (const k in t as Record<string, unknown>) {
         keys.push(k);
     }
     return keys;
@@ -345,9 +345,7 @@ class ObjectContainingMatcher implements AsymmetricMatcher {
         for (const k in this.sample) {
             const sampleVal = this.sample[k];
             const objVal = obj[k];
-            const match = isAsymmetricMatcher(sampleVal)
-                ? sampleVal.asymmetricMatch(objVal)
-                : deepEqual(objVal, sampleVal);
+            const match = isAsymmetricMatcher(sampleVal) ? sampleVal.asymmetricMatch(objVal) : deepEqual(objVal, sampleVal);
             if (this.negated) {
                 if (match) return false;
             } else {
@@ -505,7 +503,9 @@ namespace expect {
      * Add custom snapshot serializer. NOT IMPLEMENTED — snapshots not supported in Dota 2.
      */
     export function addSnapshotSerializer(_serializer: unknown): void {
-        print('[TestFramework] expect.addSnapshotSerializer() is not supported. Snapshots require a filesystem which is not available in Dota 2 VScript.');
+        print(
+            '[TestFramework] expect.addSnapshotSerializer() is not supported. Snapshots require a filesystem which is not available in Dota 2 VScript.'
+        );
     }
 }
 
@@ -552,9 +552,7 @@ interface MockState {
     _spyTarget: Record<string, any> | null;
 }
 
-function createMock<T extends (...args: any[]) => any = (...args: any[]) => any>(
-    impl?: (...args: any[]) => any
-): Mock<T> {
+function createMock<T extends (...args: any[]) => any = (...args: any[]) => any>(impl?: (...args: any[]) => any): Mock<T> {
     const state: MockState = {
         impl: impl || null,
         implQueue: [],
@@ -721,11 +719,7 @@ export function restoreSpy(spy: Mock): void {
 // ============================================================================
 
 export class Expect {
-    constructor(
-        private actual: unknown,
-        private negated: boolean = false,
-        private promiseModifier: 'none' | 'resolves' | 'rejects' = 'none'
-    ) {}
+    constructor(private actual: unknown, private negated: boolean = false, private promiseModifier: 'none' | 'resolves' | 'rejects' = 'none') {}
 
     private _assert(pass: boolean, msg: string, negMsg: string): void {
         incrementAssertionCount();
@@ -789,23 +783,19 @@ export class Expect {
 
     /** Strict equality (===). In Lua, null === undefined is true. */
     toBe(expected: unknown): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             let pass = actual === expected;
             // In Lua, null and undefined are both nil — treat as equal
             if (!pass && (actual === null || actual === undefined) && (expected === null || expected === undefined)) {
                 pass = true;
             }
-            this._assert(
-                pass,
-                `Expected ${format(actual)} to be ${format(expected)}`,
-                `Expected ${format(actual)} NOT to be ${format(expected)}`
-            );
+            this._assert(pass, `Expected ${format(actual)} to be ${format(expected)}`, `Expected ${format(actual)} NOT to be ${format(expected)}`);
         });
     }
 
     /** Deep equality check. Supports asymmetric matchers in expected value. */
     toEqual(expected: unknown): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const pass = deepEqual(actual, expected);
             this._assert(
                 pass,
@@ -817,7 +807,7 @@ export class Expect {
 
     /** Strict deep equality. In Lua runtime, equivalent to toEqual. */
     toStrictEqual(expected: unknown): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const pass = deepEqual(actual, expected);
             this._assert(
                 pass,
@@ -832,14 +822,14 @@ export class Expect {
     // ========================================================================
 
     toBeTruthy(): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const pass = !isFalsy(actual);
             this._assert(pass, `Expected ${format(actual)} to be truthy`, `Expected ${format(actual)} NOT to be truthy`);
         });
     }
 
     toBeFalsy(): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const pass = isFalsy(actual);
             this._assert(pass, `Expected ${format(actual)} to be falsy`, `Expected ${format(actual)} NOT to be falsy`);
         });
@@ -850,28 +840,28 @@ export class Expect {
     // ========================================================================
 
     toBeNull(): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const pass = actual === null || actual === undefined;
             this._assert(pass, `Expected ${format(actual)} to be null`, `Expected ${format(actual)} NOT to be null`);
         });
     }
 
     toBeUndefined(): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const pass = actual === undefined || actual === null;
             this._assert(pass, `Expected ${format(actual)} to be undefined`, `Expected ${format(actual)} NOT to be undefined`);
         });
     }
 
     toBeDefined(): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const pass = actual !== undefined && actual !== null;
             this._assert(pass, `Expected value to be defined`, `Expected ${format(actual)} NOT to be defined`);
         });
     }
 
     toBeNaN(): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const pass = actual !== actual; // NaN is the only value not equal to itself
             this._assert(pass, `Expected ${format(actual)} to be NaN`, `Expected ${format(actual)} NOT to be NaN`);
         });
@@ -882,35 +872,35 @@ export class Expect {
     // ========================================================================
 
     toBeGreaterThan(expected: number): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const pass = (actual as number) > expected;
             this._assert(pass, `Expected ${actual} to be > ${expected}`, `Expected ${actual} NOT to be > ${expected}`);
         });
     }
 
     toBeGreaterThanOrEqual(expected: number): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const pass = (actual as number) >= expected;
             this._assert(pass, `Expected ${actual} to be >= ${expected}`, `Expected ${actual} NOT to be >= ${expected}`);
         });
     }
 
     toBeLessThan(expected: number): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const pass = (actual as number) < expected;
             this._assert(pass, `Expected ${actual} to be < ${expected}`, `Expected ${actual} NOT to be < ${expected}`);
         });
     }
 
     toBeLessThanOrEqual(expected: number): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const pass = (actual as number) <= expected;
             this._assert(pass, `Expected ${actual} to be <= ${expected}`, `Expected ${actual} NOT to be <= ${expected}`);
         });
     }
 
     toBeCloseTo(expected: number, precision: number = 2): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const diff = Math.abs((actual as number) - expected);
             const threshold = Math.pow(10, -precision) / 2;
             const pass = diff < threshold;
@@ -927,14 +917,10 @@ export class Expect {
     // ========================================================================
 
     toMatch(pattern: string): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const str = actual as string;
             const pass = str.indexOf(pattern) !== -1;
-            this._assert(
-                pass,
-                `Expected "${str}" to match pattern "${pattern}"`,
-                `Expected "${str}" NOT to match pattern "${pattern}"`
-            );
+            this._assert(pass, `Expected "${str}" to match pattern "${pattern}"`, `Expected "${str}" NOT to match pattern "${pattern}"`);
         });
     }
 
@@ -943,28 +929,20 @@ export class Expect {
     // ========================================================================
 
     toContain(expected: unknown): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             if (typeof actual === 'string') {
                 const pass = (actual as string).indexOf(expected as string) !== -1;
-                this._assert(
-                    pass,
-                    `Expected "${actual}" to contain "${expected}"`,
-                    `Expected "${actual}" NOT to contain "${expected}"`
-                );
+                this._assert(pass, `Expected "${actual}" to contain "${expected}"`, `Expected "${actual}" NOT to contain "${expected}"`);
             } else {
                 const arr = actual as unknown[];
                 const pass = arr.some(item => deepEqual(item, expected));
-                this._assert(
-                    pass,
-                    `Expected array to contain ${format(expected)}`,
-                    `Expected array NOT to contain ${format(expected)}`
-                );
+                this._assert(pass, `Expected array to contain ${format(expected)}`, `Expected array NOT to contain ${format(expected)}`);
             }
         });
     }
 
     toContainEqual(expected: unknown): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const arr = actual as unknown[];
             const pass = arr.some(item => deepEqual(item, expected));
             this._assert(
@@ -976,14 +954,10 @@ export class Expect {
     }
 
     toHaveLength(expected: number): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const len = getLength(actual);
             const pass = len === expected;
-            this._assert(
-                pass,
-                `Expected length ${tostring(len)} to be ${expected}`,
-                `Expected length ${tostring(len)} NOT to be ${expected}`
-            );
+            this._assert(pass, `Expected length ${tostring(len)} to be ${expected}`, `Expected length ${tostring(len)} NOT to be ${expected}`);
         });
     }
 
@@ -992,7 +966,7 @@ export class Expect {
     // ========================================================================
 
     toHaveProperty(path: string | string[], value?: unknown): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const propVal = getByPath(actual, path);
             const hasProp = propVal !== undefined && propVal !== null;
             if (value !== undefined) {
@@ -1003,17 +977,13 @@ export class Expect {
                     `Expected object NOT to have property "${path}" with value ${format(value)}`
                 );
             } else {
-                this._assert(
-                    hasProp,
-                    `Expected object to have property "${path}"`,
-                    `Expected object NOT to have property "${path}"`
-                );
+                this._assert(hasProp, `Expected object to have property "${path}"`, `Expected object NOT to have property "${path}"`);
             }
         });
     }
 
     toMatchObject(expected: Record<string, unknown>): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const pass = matchObject(actual, expected);
             this._assert(
                 pass,
@@ -1024,7 +994,7 @@ export class Expect {
     }
 
     toBeInstanceOf(expected: Function): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const pass = actual instanceof (expected as any);
             this._assert(
                 pass,
@@ -1072,7 +1042,7 @@ export class Expect {
     // ========================================================================
 
     toHaveBeenCalled(): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const mock = actual as Mock;
             if (!(mock as any)._state) error('toHaveBeenCalled: value is not a mock function');
             const pass = mock.calls.length > 0;
@@ -1081,7 +1051,7 @@ export class Expect {
     }
 
     toHaveBeenCalledTimes(expected: number): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const mock = actual as Mock;
             if (!(mock as any)._state) error('toHaveBeenCalledTimes: value is not a mock function');
             const pass = mock.calls.length === expected;
@@ -1094,7 +1064,7 @@ export class Expect {
     }
 
     toHaveBeenCalledWith(...args: unknown[]): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const mock = actual as Mock;
             if (!(mock as any)._state) error('toHaveBeenCalledWith: value is not a mock function');
             const pass = mock.calls.some(call => {
@@ -1113,7 +1083,7 @@ export class Expect {
     }
 
     toHaveBeenLastCalledWith(...args: unknown[]): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const mock = actual as Mock;
             if (!(mock as any)._state) error('toHaveBeenLastCalledWith: value is not a mock function');
             if (mock.calls.length === 0) {
@@ -1131,7 +1101,7 @@ export class Expect {
     }
 
     toHaveBeenNthCalledWith(nthCall: number, ...args: unknown[]): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const mock = actual as Mock;
             if (!(mock as any)._state) error('toHaveBeenNthCalledWith: value is not a mock function');
             if (nthCall < 1 || nthCall > mock.calls.length) {
@@ -1149,7 +1119,7 @@ export class Expect {
     }
 
     toHaveReturned(): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const mock = actual as Mock;
             if (!(mock as any)._state) error('toHaveReturned: value is not a mock function');
             const pass = mock.results.some(r => r.type === 'return');
@@ -1158,7 +1128,7 @@ export class Expect {
     }
 
     toHaveReturnedTimes(expected: number): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const mock = actual as Mock;
             if (!(mock as any)._state) error('toHaveReturnedTimes: value is not a mock function');
             const returnCount = mock.results.filter(r => r.type === 'return').length;
@@ -1172,7 +1142,7 @@ export class Expect {
     }
 
     toHaveReturnedWith(expected: unknown): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const mock = actual as Mock;
             if (!(mock as any)._state) error('toHaveReturnedWith: value is not a mock function');
             const pass = mock.results.some(r => r.type === 'return' && deepEqual(r.value, expected));
@@ -1185,7 +1155,7 @@ export class Expect {
     }
 
     toHaveLastReturnedWith(expected: unknown): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const mock = actual as Mock;
             if (!(mock as any)._state) error('toHaveLastReturnedWith: value is not a mock function');
             const returns = mock.results.filter(r => r.type === 'return');
@@ -1204,7 +1174,7 @@ export class Expect {
     }
 
     toHaveNthReturnedWith(nthCall: number, expected: unknown): void | Promise<void> {
-        return this._applyMatcher((actual) => {
+        return this._applyMatcher(actual => {
             const mock = actual as Mock;
             if (!(mock as any)._state) error('toHaveNthReturnedWith: value is not a mock function');
             const returns = mock.results.filter(r => r.type === 'return');
@@ -1514,7 +1484,10 @@ export function afterEach(fn: HookFn): void {
 /** Promise-based delay — uses Timers.CreateTimer under the hood. */
 export function delay(seconds: number): Promise<void> {
     return new Promise<void>(resolve => {
-        Timers.CreateTimer(seconds, () => { resolve(); return null; });
+        Timers.CreateTimer(seconds, () => {
+            resolve();
+            return null;
+        });
     });
 }
 
@@ -1544,9 +1517,7 @@ export function runAll(filter?: string): Promise<TestRunResult> {
     };
     const t0 = Time();
 
-    let matched = filter
-        ? suites.filter(s => s.name.indexOf(filter) !== -1)
-        : suites;
+    let matched = filter ? suites.filter(s => s.name.indexOf(filter) !== -1) : suites;
 
     if (onlyMode) {
         matched = matched.filter(s => s.only || s.cases.some(tc => tc.only));
@@ -1672,7 +1643,11 @@ async function runSuite(suite: TestSuite, result: TestRunResult, onlyModeActive:
             print(`${indent}${indent}✓ ${tc.name}${tc.failing ? ' (failing)' : ''}`);
         } else {
             result.failed++;
-            print(`${indent}${indent}✗ ${tc.name}${tc.failing ? ' (expected to fail)' : ''} — ${result.errors[result.errors.length - 1]?.message || 'unknown error'}`);
+            print(
+                `${indent}${indent}✗ ${tc.name}${tc.failing ? ' (expected to fail)' : ''} — ${
+                    result.errors[result.errors.length - 1]?.message || 'unknown error'
+                }`
+            );
         }
 
         // afterEach
@@ -1745,19 +1720,23 @@ export function registerTestCommand(): void {
     if (!IsServer()) return;
     listenerRegistered = true;
 
-    ListenToGameEvent('player_chat', (keys: GameEventProvidedProperties & PlayerChatEvent) => {
-        if (!IsInToolsMode()) return;
-        const text = keys.text;
-        const parts = text.split(' ');
-        if (parts[0] !== '-test') return;
+    ListenToGameEvent(
+        'player_chat',
+        (keys: GameEventProvidedProperties & PlayerChatEvent) => {
+            if (!IsInToolsMode()) return;
+            const text = keys.text;
+            const parts = text.split(' ');
+            if (parts[0] !== '-test') return;
 
-        const filter = parts[1];
-        print(`\n[Test] Running${filter ? ` suites matching "${filter}"` : ' all suites'}…\n`);
+            const filter = parts[1];
+            print(`\n[Test] Running${filter ? ` suites matching "${filter}"` : ' all suites'}…\n`);
 
-        runAll(filter).then(result => {
-            printResult(result);
-        });
-    }, undefined);
+            runAll(filter).then(result => {
+                printResult(result);
+            });
+        },
+        undefined
+    );
 }
 
 // Re-export expect with its namespace merged

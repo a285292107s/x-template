@@ -113,6 +113,10 @@ function processTimers(timers: TimerEntry[], now: number): TimerEntry[] {
             }
         } else {
             if (IsInToolsMode()) print(tostring(result));
+            else {
+                // 生产环境打印报错没有意义
+                // If you need to collect error info, send an HTTP request here
+            }
             runningTimer = null;
         }
     }
@@ -224,6 +228,20 @@ function RemoveTimer(handle: TimerHandle): void {
     handle.cancel();
 }
 
+/**
+ * Clear all timers.
+ *
+ * WARNING / 注意:
+ * Calling this inside a timer callback will NOT fully clear pending timers —
+ * the `think()` loop snapshots the array before processing, so surviving
+ * (non-cancelled, not-yet-fired) entries will be re-assigned back.
+ *
+ * 在定时器回调中调用此方法无法完全清除所有定时器——
+ * `think()` 循环在处理前会快照数组，因此未取消、未触发的条目会被重新赋值回去。
+ *
+ * This method is generally NOT recommended. Prefer cancelling specific handles.
+ * 一般不推荐使用此方法，建议优先取消具体的 TimerHandle。
+ */
 export function ClearAll(): void {
     gameTimers = [];
     realTimers = [];

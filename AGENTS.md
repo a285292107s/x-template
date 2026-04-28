@@ -4,6 +4,8 @@
 
 这是一个 DOTA2自定义游戏（DOTA2RPG）制作项目模板，关于游戏的具体设定，请读取 GAME_DESIGN.MD 文件了解游戏的整体设计内容和用户要求。
 
+本项目使用 **yarn** 作为包管理器，请勿使用 npm 安装依赖。
+
 ## 关键路径
 
 ### 游戏逻辑 (`game/`)
@@ -125,3 +127,11 @@
 | `package.json` | 依赖与脚本命令 |
 | `gulpfile.ts` | Gulp 构建任务（Excel→KV、KV→JSON、CSV→本地化、图片预缓存、LESS 编译） |
 | `tsconfig.json` | 根 TypeScript 配置 |
+
+## 错误检查
+
+在修改代码后，使用以下命令分别检查前后端报错，不要使用 `tsc` 直接检查：
+
+- **后端（TSTL 脚本）**：`npx tstl --project game/scripts/tsconfig.json`
+- **前端（Panorama UI）**：`npx tsc --project content/panorama/tsconfig.json --noEmit`
+- **Lint/格式化**：`yarn lint`

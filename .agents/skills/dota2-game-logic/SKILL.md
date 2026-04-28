@@ -436,5 +436,5 @@ npx tstl --project game/scripts/tsconfig.json && npx webpack --config content/pa
 6. **ScriptFile 路径错误**：KV 中的 `ScriptFile` 指向编译后的 `.lua` 文件路径（如 `abilities/module/ability.lua`）
 7. **print vs Say**：`print()` 只在服务端控制台输出，`Say()` 在游戏内显示
 8. **Vector 运算**：向量运算结果需要 `as Vector` 类型断言
-9. **编译后才能测试**：TSTL 代码修改后需要编译才能在游戏中生效，开发模式用 `npm run dev` 自动编译
+9. **编译后才能测试**：TSTL 代码修改后需要编译才能在游戏中生效，开发模式用 `yarn dev` 自动编译
 10. **shared/ 类型声明**：`shared/` 目录的修改会同时影响前后端编译，确保声明正确
