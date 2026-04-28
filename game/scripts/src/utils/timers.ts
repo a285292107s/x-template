@@ -10,7 +10,7 @@
  * @example
  * ```ts
  * // Fire after 1 frame
- * Timers.CreateTimer(() => print('next frame'));
+ * Timers.CreateTimer(() => print('next tick'));
  *
  * // Fire after 2 seconds, repeat every 1 second
  * Timers.CreateTimer(2, () => { print('tick'); return 1; });
@@ -75,12 +75,15 @@ class TimerHandleImpl implements TimerHandle {
 // State
 // ============================================================================
 
+// Dota 2 引擎硬限制 Entity:SetThink() 最大频率为 30fps (~0.033s)。
+// 此处写 0.01 仅保证 thinker 在每一引擎帧都被调度到（不会被引擎截断），
+// 实际触发频率仍为 ~0.033s。
 const THINK_INTERVAL = 0.01;
 const POST_GAME = GameState.POST_GAME;
 
 let gameTimers: TimerEntry[] = [];
 let realTimers: TimerEntry[] = [];
-let nextFrameCallbacks: Array<() => void> = [];
+let nextTickCallbacks: Array<() => void> = [];
 let runningTimer: TimerEntry | null = null;
 let shouldRemoveRunning = false;
 let initialized = false;
@@ -124,9 +127,9 @@ function processTimers(timers: TimerEntry[], now: number): TimerEntry[] {
 }
 
 function think(): number {
-    if (nextFrameCallbacks.length > 0) {
-        const pending = nextFrameCallbacks;
-        nextFrameCallbacks = [];
+    if (nextTickCallbacks.length > 0) {
+        const pending = nextTickCallbacks;
+        nextTickCallbacks = [];
         for (const cb of pending) {
             const [ok, err] = pcall(() => cb());
             if (!ok && IsInToolsMode()) print(tostring(err));
@@ -219,9 +222,9 @@ export function CreateTimer(arg1: number | CreateTimerOptions | ((this: void) =>
     return new TimerHandleImpl(entry);
 }
 
-export function NextFrame(callback: () => void): void {
+export function NextTick(callback: () => void): void {
     ensureInit();
-    nextFrameCallbacks.push(callback);
+    nextTickCallbacks.push(callback);
 }
 
 function RemoveTimer(handle: TimerHandle): void {
@@ -245,7 +248,7 @@ function RemoveTimer(handle: TimerHandle): void {
 export function ClearAll(): void {
     gameTimers = [];
     realTimers = [];
-    nextFrameCallbacks = [];
+    nextTickCallbacks = [];
     runningTimer = null;
     shouldRemoveRunning = false;
 }
@@ -254,14 +257,14 @@ export function ClearAll(): void {
 // Global
 // ============================================================================
 
-const TimersGlobal = { CreateTimer, NextFrame, RemoveTimer, ClearAll };
+const TimersGlobal = { CreateTimer, NextTick, RemoveTimer, ClearAll };
 globalThis.Timers = TimersGlobal;
 if (IsServer()) GameRules.Timers = TimersGlobal;
 
 declare global {
     var Timers: {
         CreateTimer: typeof CreateTimer;
-        NextFrame: typeof NextFrame;
+        NextTick: typeof NextTick;
         RemoveTimer: (handle: TimerHandle) => void;
         ClearAll: typeof ClearAll;
     };
