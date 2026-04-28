@@ -1,7 +1,7 @@
 import type { CommandEntry, DevCallback } from './types';
 import type { EasingFunctionName } from '../../tween';
 import { tween } from '../../tween';
-import { runAll, printResult } from '../test_framework';
+import { runAll, printResult } from '..';
 
 export const DevCommands: Record<string, CommandEntry<DevCallback>> = {
     ['-s']: {
