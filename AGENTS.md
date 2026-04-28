@@ -133,6 +133,62 @@
 - **禁止未经用户同意执行 commit**：任何 git commit 操作必须获得用户明确许可后方可执行。
 - **commit 前必须执行 `yarn lint`**：确保所有 lint 检查通过后再提交。
 
+## 测试框架
+
+测试框架文档详见 `game/scripts/src/utils/testing/readme.md`。
+
+### 编写测试用例
+
+```typescript
+// game/scripts/src/utils/testing/my_test.ts
+import { describe, it, expect, delay } from './test_framework';
+
+describe('MyModule', () => {
+    it('同步测试', () => {
+        expect(1 + 1).toBe(2);
+    });
+
+    it('异步测试', async () => {
+        let flag = false;
+        Timers.CreateTimer(0.1, () => { flag = true; return null; });
+        await delay(0.2);
+        expect(flag).toBeTruthy();
+    });
+});
+```
+
+### 注册测试（必须！）
+
+测试文件编写后，必须在 `game/scripts/src/utils/testing/index.ts` 中导入才能被注册：
+
+```typescript
+// testing/index.ts 末尾
+import './my_test';
+```
+
+**不要在 `dev_commands.ts` 或其他文件中导入测试文件**，必须通过 `testing/index.ts` 注册。
+
+### 引用测试框架 API
+
+- 在 `game/scripts/src/utils/testing/` 下的文件：`import { ... } from './test_framework'`
+- 在 `dev_commands.ts` 等外部文件：`import { runAll, printResult } from '..'`（即 `testing/index.ts`，而非直接 `../test_framework`）
+
+**规则**：凡是要使用 `runAll` / `printResult`，一律从 `testing/index.ts` 导入（`'..'` 或 `'../utils/testing'`），不要直接从 `test_framework.ts` 导入，否则测试文件不会被注册。
+
+### 运行测试
+
+在游戏内聊天框输入（需 tools mode，Dev 指令）：
+- `-tx` — 运行所有测试
+- `-tx Timer` — 运行名称包含 "Timer" 的套件（大小写不敏感的子串匹配）
+
+### 已知陷阱
+
+| 问题 | 说明 | 正确做法 |
+|------|------|---------|
+| 测试文件未注册 | 忘记在 `testing/index.ts` 添加 `import './my_test'` | 在 `index.ts` 中添加 side-effect import |
+| 绕过 `index.ts` 导入 | 直接 `from '../test_framework'` 导致测试文件不加载 | 必须 `from '..'` 或 `from '../utils/testing'` |
+| 测试结果 0/0 | 通常是上述两种原因导致套件未注册 | 检查 `testing/index.ts` 的导入 |
+
 ## 错误检查
 
 在修改代码后，使用以下命令分别检查前后端报错，不要使用 `tsc` 直接检查：
