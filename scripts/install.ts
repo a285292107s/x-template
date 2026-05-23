@@ -1,7 +1,6 @@
 import assert from 'assert';
 import fs from 'fs-extra';
 import path from 'path';
-import { execSync } from 'child_process';
 import getDotaPath from './getDotaPath';
 import config from './addon.config';
 
@@ -25,59 +24,57 @@ import config from './addon.config';
         assert(fs.existsSync(targetRoot), `Could not find '${targetRoot}'`);
 
         const targetPath = path.join(dotaPath, directoryName, 'dota_addons', config.addon_name);
-
-        // 检查 sourcePath 是否仍是 junction（旧版布局需要迁移）
-        if (fs.lstatSync(sourcePath).isSymbolicLink()) {
-            const oldTarget = fs.realpathSync(sourcePath);
-            console.log(`'${sourcePath}' is a junction to '${oldTarget}' (old layout). Migrating...`);
-
-            // 如果 Dota2 目录已经指向正确的 source，直接解除 source 的 junction
-            if (fs.existsSync(targetPath) && fs.lstatSync(targetPath).isSymbolicLink() && fs.realpathSync(targetPath) === sourcePath) {
-                console.log(`'${targetPath}' already points back to project. Removing old junction...`);
-                await fs.remove(sourcePath);
-            } else {
-                // 旧布局：source 是 junction → Dota2 目录
-                // 需要解除旧 junction，恢复 source 为真实目录
-                await fs.remove(sourcePath);
-            }
-
-            // 从 git 恢复 source 为真实目录
-            console.log(`Restoring '${sourcePath}' from git...`);
-            execSync(`git checkout HEAD -- "${sourcePath}"`, { cwd: path.resolve(__dirname, '..'), stdio: 'pipe' });
-
-            if (!fs.existsSync(sourcePath)) {
-                console.error(`Failed to restore '${sourcePath}' from git. Please run: git checkout HEAD -- ${directoryName}`);
-                continue;
-            }
-
-            console.log(`Restored '${sourcePath}' as a real directory.`);
-        }
-
-        // 新布局：Dota2 目录 junction → 项目目录（source of truth）
         if (fs.existsSync(targetPath)) {
-            const isCorrect = fs.lstatSync(targetPath).isSymbolicLink() && fs.realpathSync(targetPath) === sourcePath;
+            const isCorrect = fs.lstatSync(sourcePath).isSymbolicLink() && fs.realpathSync(sourcePath) === targetPath;
             if (isCorrect) {
-                console.log(`Skipping '${targetPath}' since it is already linked to the project.`);
+                console.log(`Skipping '${sourcePath}' since it is already linked`);
                 continue;
-            }
-
-            // targetPath 存在但不是指向 sourcePath 的 junction
-            const targetStat = fs.lstatSync(targetPath);
-            if (targetStat.isSymbolicLink()) {
-                console.log(`'${targetPath}' is a junction to '${fs.realpathSync(targetPath)}', relinking to project...`);
             } else {
-                console.log(`'${targetPath}' is a real directory, backing up and creating junction...`);
-                const backupPath = `${path.resolve(__dirname, '..', directoryName)}.backup.${Date.now()}`;
-                fs.moveSync(targetPath, backupPath);
-                console.log(`Backed up old '${targetPath}' to '${backupPath}'`);
-            }
+                console.log(`'${targetPath}' is already linked to another directory, repairing...`);
 
-            await fs.remove(targetPath);
-            fs.symlinkSync(sourcePath, targetPath, 'junction');
-            console.log(`Linked ${targetPath} <==> ${sourcePath}`);
+                const backupPath = `${sourcePath}.backup.${Date.now()}`;
+                let backupCreated = false;
+
+                try {
+                    fs.chmodSync(targetPath, '0755');
+
+                    fs.moveSync(sourcePath, backupPath);
+                    backupCreated = true;
+                    console.log(`Created backup at '${backupPath}'`);
+
+                    await fs.remove(targetPath);
+                    console.log('Removed old target path');
+
+                    fs.moveSync(backupPath, targetPath);
+                    console.log('Moved backup to target path');
+
+                    fs.symlinkSync(targetPath, sourcePath, 'junction');
+                    console.log(`Repaired broken link ${sourcePath} <==> ${targetPath}`);
+                } catch (error) {
+                    console.error('Failed to repair link:', error);
+
+                    if (backupCreated && fs.existsSync(backupPath)) {
+                        try {
+                            if (!fs.existsSync(sourcePath)) {
+                                fs.moveSync(backupPath, sourcePath);
+                                console.log(`Restored '${sourcePath}' from backup`);
+                            } else {
+                                await fs.remove(backupPath);
+                                console.log(`Cleaned up backup at '${backupPath}'`);
+                            }
+                        } catch (restoreError) {
+                            console.error(`CRITICAL: Failed to restore backup from '${backupPath}':`, restoreError);
+                            console.error(`Please manually restore your data from '${backupPath}' to '${sourcePath}'`);
+                        }
+                    }
+
+                    throw error;
+                }
+            }
         } else {
-            fs.symlinkSync(sourcePath, targetPath, 'junction');
-            console.log(`Linked ${targetPath} <==> ${sourcePath}`);
+            fs.moveSync(sourcePath, targetPath);
+            fs.symlinkSync(targetPath, sourcePath, 'junction');
+            console.log(`Linked ${sourcePath} <==> ${targetPath}`);
         }
     }
 })().catch((error: Error) => {
